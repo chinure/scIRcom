@@ -1,4 +1,4 @@
-# scRepertoire
+# scIRcom
 #### A toolkit for single-cell immune profiling
 
 <img align="right" src="https://github.com/ncborcherding/ncborcherding.github.io/blob/master/images/hex_sticker_v2.png" width="305" height="352">
