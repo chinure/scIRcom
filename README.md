@@ -15,12 +15,12 @@ scRepertoire v1.0.2 has the functionality of the [powerTCR](https://github.com/h
 ### Installation of Master Branch
 
 ```
-devtools::install_github("ncborcherding/scRepertoire")
+devtools::install_github("chinure/scIRcom")
 ```
 #### Most up-to-date version
 
 ```
-devtools::install_github("ncborcherding/scRepertoire@dev")
+devtools::install_github("chinure/scIRcom@dev")
 ```
 
 We are working on constantly improving the scRepertoire package - these improvements can be found under the "refine" branch. These changes will be incorporated into the main branch as they are tested more throughly.
