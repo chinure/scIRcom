@@ -460,21 +460,21 @@ scatterClonotype <- function(df, cloneCall ="strict",
   for (i in seq_along(labeling)) {
     if (length(labeling) > 2) {
       combined.df[,"class"] <- ifelse(combined.df[,labeling[i]] == 1 & rowSums(combined.df[,labeling[which(labeling != labeling[i])]]) == 0, 
-                                      paste0(labeling[i], ".singlet"), combined.df[,"class"])
+                                      paste0(labeling[i], " singlet"), combined.df[,"class"])
       combined.df[,"class"] <- ifelse(combined.df[,labeling[i]] > 1 & rowSums(combined.df[,labeling[which(labeling != labeling[i])]]) == 0, 
-                                      paste0(labeling[i], ".multiplet"), combined.df[,"class"])
+                                      paste0(labeling[i], " multiplet"), combined.df[,"class"])
     } else if (length(labeling) == 2) {
       combined.df[,"class"] <- ifelse(combined.df[,labeling[i]] == 1 & combined.df[,labeling[which(labeling != labeling[i])]] == 0, 
-                                      paste0(labeling[i], ".singlet"), combined.df[,"class"])
+                                      paste0(labeling[i], " singlet"), combined.df[,"class"])
       combined.df[,"class"] <- ifelse(combined.df[,labeling[i]] > 1 & combined.df[,labeling[which(labeling != labeling[i])]] == 0, 
-                                      paste0(labeling[i], ".multiplet"), combined.df[,"class"])
+                                      paste0(labeling[i], " multiplet"), combined.df[,"class"])
   }}
-  combined.df[,"class"] <- ifelse(combined.df[,y.axis] >= 1 & combined.df[,x.axis] >= 1, paste0("dual.expanded"), combined.df[,"class"])
-  combined.df[,paste0(x.axis, ".fraction")] <- combined.df[,x.axis]/sum(combined.df[,x.axis])
-  combined.df[,paste0(y.axis, ".fraction")] <- combined.df[,y.axis]/sum(combined.df[,y.axis])
+  combined.df[,"class"] <- ifelse(combined.df[,y.axis] >= 1 & combined.df[,x.axis] >= 1, paste0("dual expanded"), combined.df[,"class"])
+  combined.df[,paste0(x.axis, " fraction")] <- combined.df[,x.axis]/sum(combined.df[,x.axis])
+  combined.df[,paste0(y.axis, " fraction")] <- combined.df[,y.axis]/sum(combined.df[,y.axis])
   if (graph == "proportion") {
-    x <- combined.df[,paste0(x.axis, ".fraction")]
-    y <- combined.df[,paste0(y.axis, ".fraction")]
+    x <- combined.df[,paste0(x.axis, " fraction")]
+    y <- combined.df[,paste0(y.axis, " fraction")]
   } else if (graph == "count") {
     x <- combined.df[,x.axis]
     y <- combined.df[,y.axis] }
@@ -487,7 +487,7 @@ scatterClonotype <- function(df, cloneCall ="strict",
     scale_color_manual(values = colorblind_vector(length(unique(combined.df$class)))) + 
     xlab(x.axis) + ylab(y.axis) + labs(size = "Total n")
   if (graph == "proportion") {
-    plot <- plot + geom_abline(slope = 1, intercept = 0, alpha = 0.4, lty=2)  + 
+    plot <- plot + geom_smooth(method = "lm")  + 
       scale_y_sqrt() + scale_x_sqrt() 
   } else if (graph == "count") {
     plot <- plot + ylim(0, max(x,y)) + xlim(0, max(x,y)) 
