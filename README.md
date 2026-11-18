@@ -1,52 +1,98 @@
 # scIRcom
-#### A toolkit for single-cell immune profiling
 
-<img align="right" src="https://github.com/ncborcherding/ncborcherding.github.io/blob/master/images/hex_sticker_v2.png" width="305" height="352">
+A local adaptation of **scRepertoire: A toolkit for single-cell immune receptor
+profiling**, originally authored by Nick Borcherding. The inherited functions
+combine immune-receptor contigs, summarize clonotypes, and connect repertoire
+measurements to Seurat or SingleCellExperiment objects. This repository maintains
+selected import and compatibility changes; it does not introduce an independent
+immune-repertoire algorithm.
 
-### Introduction
-Single-cell sequencing is an emerging technology in the field of immunology and oncology that allows researchers to couple RNA quantification and other modalities, like immune cell receptor profiling at the level of an individual cell. A number of workflows and software packages have been created to process and analyze single-cell transcriptomic data. These packages allow users to take the vast dimensionality of the data generated in single-cell-based experiments and distill the data into novel insights. Unlike the transcriptomic field, there is a lack of options for software that allow for single-cell immune receptor profiling. Enabling users to easily combine RNA and immune profiling, scRepertoire was built to process data derived from the 10x Genomics Chromium Immune Profiling for both T-cell receptor (TCR) and immunoglobulin (Ig) enrichment workflows and subsequently interacts with the popular Seurat R package. 
+Local maintainer: **Yao Zhi**, zhiyao@jlu.edu.cn.
 
-### Applying Deep Learning to VDJ data
-scRepertoire is compatible and integrated with the R packages [Trex](https://github.com/ncborcherding/Trex) for deep-learning-based autencoding of the T cell receptor and [Ibex](https://github.com/ncborcherding/Ibex) for the B cell receptor. 
+## Origin, citation and license
 
-### Wrapper Functions
-scRepertoire v1.0.2 has the functionality of the [powerTCR](https://github.com/hillarykoch/powerTCR) approach to comparing clone size distribution, [please cite](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006571) the manuscript if using the ```clonesizeDistribution()``` function. In addition, we recently added the [Startrac](https://github.com/Japrin/STARTRAC) clonotype metrics, if using the ```StartracDiversity()``` please read and cite [the accompanying article](https://www.nature.com/articles/s41586-018-0694-x).
+- Upstream project: [ncborcherding/scRepertoire](https://github.com/ncborcherding/scRepertoire).
+- Original paper: Borcherding N, Bormann NL, Kraus G. *scRepertoire: An R-based
+  toolkit for single-cell immune receptor analysis*. F1000Research. 2020;9:47.
+  [doi:10.12688/f1000research.22139.1](https://doi.org/10.12688/f1000research.22139.1).
+- This is an older 1.7.x-derived development snapshot, not the current upstream or
+  Bioconductor release. The exact original import commit was not recorded. The
+  matching upstream development-era
+  [DESCRIPTION, version 1.7.2](https://github.com/ncborcherding/scRepertoire/blob/43ae3a9cb903798f1f092dc5b15aeca7829f67c6/DESCRIPTION)
+  declares **GPL-2**. This repository follows GPL-2; the previous unrelated
+  Unlicense text has been replaced by the GPL version 2 text in [LICENSE](LICENSE).
+  Upstream authorship is preserved in DESCRIPTION, with local maintenance
+  separately attributed.
+- STARTRAC and powerTCR are upstream dependencies/wrappers. Cite their original
+  papers when using those methods; this repository does not claim their methods
+  as local inventions. See the relevant function documentation.
 
-### Installation of Master Branch
+## Installation
 
-```
-devtools::install_github("chinure/scIRcom")
-```
-#### Most up-to-date version
+Use an R/Bioconductor combination compatible with the package dependencies.
+DESCRIPTION lists the package requirements; dependency versions are not locked.
+The obsolete `dev` branch previously listed here does not exist.
 
-```
-devtools::install_github("chinure/scIRcom@dev")
-```
-
-We are working on constantly improving the scRepertoire package - these improvements can be found under the "refine" branch. These changes will be incorporated into the main branch as they are tested more throughly.
-
-#### Bioconductor
-
-[scRepertoire](https://www.bioconductor.org/packages/release/bioc/html/scRepertoire.html) is now on Bioconductor. Use the link to find out more information. scRepertoire (for R v4 or greater) can be installed from Bioconductor with:
-
-```
+```r
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-
-BiocManager::install("scRepertoire")
+BiocManager::install(c("powerTCR", "SingleCellExperiment", "SummarizedExperiment"))
+if (!requireNamespace("remotes", quietly = TRUE))
+    install.packages("remotes")
+remotes::install_github("chinure/scIRcom", ref = "main", build_vignettes = FALSE)
 ```
 
-### Getting Data
+The R package name is `scIRcom`. Installing upstream `scRepertoire` from
+Bioconductor installs a separate package and does not install this repository.
+For current upstream tutorials, use the upstream project's documentation and
+account for API changes between versions.
 
-Unfortunately, Github limits the size of individual files. In order to access the seurat object paired with scRepetoire please download the .rda from [here](https://drive.google.com/file/d/1Iv6t2BScpnLLrFWaWFUGwne3XzRAwMOc/view?usp=share_link).
+## Contig import
 
-### Learning To Use scRepertoire
+The maintained importer accepts sample directories or explicit file paths:
 
-Vignette available [here](https://ncborcherding.github.io/vignettes/vignette.html), includes almost 13,000 T cells across 3 patients with renal clear cell carcinoma. 
+```r
+library(scIRcom)
+contigs <- loadContigs(c("sample1/outs", "sample2/outs"), format = "10X")
+airr <- loadContigs("sample1/airr_rearrangement.tsv", format = "AIRR")
+```
 
-### Please Cite
-Feel free to use, edit, modify scRepertoire, but if you do, please cite the [manuscript](https://f1000research.com/articles/9-47/v1).
+For 10X data, the canonical filename is `filtered_contig_annotations.csv`;
+the older singular spelling is also accepted. AIRR directories use
+`airr_rearrangement.tsv`. Input barcodes must still be reconciled with the
+expression object before combining modalities.
 
-### Contact
-Questions, comments, suggestions, please feel free to contact Nick Borcherding via this repository, [email](mailto:ncborch@gmail.com), or using [twitter](https://twitter.com/theHumanBorch). 
+## Checks and current limits
 
+From a source checkout:
+
+```bash
+Rscript tests/smoke-load-contigs.R
+R CMD build .
+```
+
+The regression check uses synthetic fixtures and exercises actual 10X/AIRR
+import, productive-contig filtering, multiple samples, canonical/legacy filenames,
+legacy WAT3R TRB/two-TRA mapping, TRUST4 six-field tuples, and missing-input
+validation. It requires stringr, already listed in Imports. It does not reproduce a clinical paper.
+
+The source files parse, the focused importer check passes, and a source package
+build succeeds in the review environment. A complete `R CMD check` has **not**
+passed: the required powerTCR dependency is absent in that environment. Bundled
+example data and generated `man/` documentation from upstream are also absent.
+WAT3R import accepts the legacy barcode_results.csv header with the first24
+fields in upstream order, plus optional trailing annotation columns. A different
+header/order is rejected explicitly. Its positional mapping was checked against
+the [upstream scRepertoire parser](https://github.com/ncborcherding/scRepertoire/blob/a57be2f0491c022cda5a94301ae5736249a12bb6/R/loadContigs.R)
+and [public WAT3R example header](https://www.borch.dev/uploads/contigs/WAT3R_contigs.csv).
+TRUST4 import accepts legacy six-field chain tuples and rejects unsupported
+field counts explicitly; missing chains remain NA. A single-row fixture is
+covered without matrix-dimension dropping. Neither
+upstream wetlab/sequencing pipeline has been rerun on real study data.
+Most inherited plotting and diversity functions have not received local
+regression coverage. These limits should be resolved before presenting this as a
+fully validated software release.
+
+No source data from the maintainer's publications are bundled. Repertoire
+software provenance does not establish which experiments or analyses an author
+personally performed in any particular paper.

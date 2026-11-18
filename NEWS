@@ -1,3 +1,14 @@
+LOCAL DEVELOPMENT CHANGES IN VERSION 1.7.0.9001
+----------------------------------------------
+* Clarify scRepertoire provenance, upstream authorship, local maintenance and GPL-2.
+* Repair directory/file import and parser-name errors for 10X and AIRR contigs.
+* Repair WAT3R TRB/TRA labels and ten-column mapping; reject unsupported headers.
+* Add synthetic importer regression coverage for legacy WAT3R and TRUST4.
+* Add a synthetic importer regression check; full package validation remains incomplete.
+
+UPSTREAM CHANGELOG (inherited history)
+====================================
+
 CHANGES IN VERSION 1.7.2
 ------------------------
 * Rebumping the version change with new release of Bioconductor
